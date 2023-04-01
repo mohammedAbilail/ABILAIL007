@@ -16,6 +16,8 @@ let JwtStrategy = passportJWT.Strategy;
 let jwtOptions = {};
 jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderWithScheme('jwt');
 
+jwtOptions.secretOrKey = process.env.JWT_SECRET;
+
 let strategy = new JwtStrategy(jwtOptions, function (jwt_payload, next) {
     console.log('payload received', jwt_payload);
 
@@ -60,7 +62,7 @@ app.post("/api/user/login", (req, res) => {
                 userName: user.userName,
             };
 
-            let token = jwt.sign(payload, process.env.JWT_SECRET);
+            let token = jwt.sign(payload, jwtOptions.secretOrKey);
             res.json({ "message": "login successful", "token": token });
         }).catch(msg => {
             res.status(422).json({ "message": msg });
